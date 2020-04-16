@@ -18,6 +18,10 @@ The library uses Timer 0 and Timer 1 of the Atmega328p. Timer 0 is used to gener
 How to use the library:
 See Example.c
 
+Library functions:
+1. void HCSR04_Init(void) :: This initializes the ultrasonic sensor
+2. uint32_t getDistance(void) :: This returns the distance measured
+
 Additional information can be found in the datasheets of the Atmega328p and the HCSR04.
 
 Suggestions for improving the codes will be greatly appreciated
