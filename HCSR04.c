@@ -37,6 +37,7 @@ uint32_t getDistance(){
 	static uint32_t distance_cm;
 	extern  volatile uint32_t duty_cycle;
 	
+        //32768uS = 65536 clock ticks for Timer 1 with prescaler = 8
 	echo_pulse_uS = (float)duty_cycle * 32768 / 65536;
 	distance_cm = echo_pulse_uS * 0.034 / 2;
 	return distance_cm;
