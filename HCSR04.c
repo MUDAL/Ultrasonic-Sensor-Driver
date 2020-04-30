@@ -13,7 +13,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "HCSR04.h"
-#define MAX 0xFFFF
 
 void HCSR04_Init(){
 	
@@ -56,15 +55,11 @@ ISR(TIMER1_CAPT_vect){
 	}
 	
 	if (first_reading != 0 && second_reading != 0){
-		if (second_reading > first_reading){
-			duty_cycle = second_reading - first_reading;
-		}
-		else {
-			duty_cycle = MAX + second_reading - first_reading + 1;
-		}
+		duty_cycle = second_reading - first_reading;
 		first_reading = 0;
 		second_reading = 0;
 	}
+	
 	TCCR1B ^= (1<<ICES1); //toggle edge detection bit
 	TIFR1 = (1<<ICF1);//clear Input Capture Flag
 }
