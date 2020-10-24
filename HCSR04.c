@@ -14,8 +14,11 @@
 #include <avr/interrupt.h>
 #include "HCSR04.h"
 
+static volatile uint32_t first_reading = 0;
+static volatile uint32_t second_reading = 0;
+static volatile uint32_t duty_cycle = 0;
+
 void HCSR04_Init(){
-	
 	cli(); //clear prior interrupts
 	/*Fast PWM Configuration*/
 	DDRD |= (1<<DDD6); //set PD6 as output
@@ -28,14 +31,11 @@ void HCSR04_Init(){
 	TCCR1B = (1<<ICNC1)|(1<<ICES1)|(1<<CS11); //noise canceling + positive edge detection for input capture and Prescaler = 8.
 	sei();//enable global interrupts
 	TIMSK1 |= (1<<ICIE1); //enable timer1 input capture interrupt
-
 }
 
 uint32_t getDistance(){
 	static uint32_t echo_pulse_uS;
 	static uint32_t distance_cm;
-	extern  volatile uint32_t duty_cycle;
-	
         //32768uS = 65536 clock ticks for Timer 1 with prescaler = 8
 	echo_pulse_uS = (float)duty_cycle * 32768 / 65536;
 	distance_cm = echo_pulse_uS * 0.034 / 2;
@@ -43,10 +43,6 @@ uint32_t getDistance(){
 }
 
 ISR(TIMER1_CAPT_vect){
-	extern  volatile uint32_t first_reading;
-	extern  volatile uint32_t second_reading;
-	extern  volatile uint32_t duty_cycle;
-	
 	if ((TCCR1B & (1<<ICES1)) == (1<<ICES1)){
 		first_reading = ICR1;
 	}
@@ -64,6 +60,4 @@ ISR(TIMER1_CAPT_vect){
 	TIFR1 = (1<<ICF1);//clear Input Capture Flag
 }
 
-volatile uint32_t first_reading = 0;
-volatile uint32_t second_reading = 0;
-volatile uint32_t duty_cycle = 0;
+
